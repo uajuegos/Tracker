@@ -11,47 +11,115 @@ namespace Tracker
     {
 
         //Podría ser interesante comprobar la conexion a internet y proporcionar la hora del equipo solo si no hay acceso a la red
-        static Event Dead(string actor, string subject)
+        /// <summary>
+        /// Muerte actor
+        /// </summary>
+        /// <param name="actor"></param>
+        /// <param name="subject"></param>
+        /// <returns></returns>
+        static Event Dead(ActorSubjectType actor, ActorSubjectType subject)
         {
-            return new Event(DateTime.Now, EvenTipe.Dead, actor, subject, "");
+            return new Event(DateTime.Now, EvenType.Dead, actor, subject, "");
         }
-        static Event Damage(string actor, string subject)
+        static Event Dead(ActorSubjectType actor, ActorSubjectType subject, string extra)
         {
-            return new Event(DateTime.Now, EvenTipe.Damage, actor, subject, "");
+            return new Event(DateTime.Now, EvenType.Dead, actor, subject, extra);
         }
-        static Event Interact(string actor, string subject)
+        /// <summary>
+        /// Daño actor
+        /// </summary>
+        /// <param name="actor"></param>
+        /// <param name="subject"></param>
+        /// <returns></returns>
+        static Event Damage(ActorSubjectType actor, ActorSubjectType subject)
         {
-            return new Event(DateTime.Now, EvenTipe.Interact, actor, subject, "");
+            return new Event(DateTime.Now, EvenType.Damage, actor, subject, "");
         }
-        static Event Position(string actor)
+        static Event Damage(ActorSubjectType actor, ActorSubjectType subject, string extra)
         {
-            return new Event(DateTime.Now, EvenTipe.Position, actor, "", "");
+            return new Event(DateTime.Now, EvenType.Damage, actor, subject, extra);
         }
-        static Event Init(string actor, string subject)
+        /// <summary>
+        /// Evento de interacción de actor y sujeto
+        /// </summary>
+        /// <param name="actor"></param>
+        /// <param name="subject"></param>
+        /// <returns></returns>
+        static Event Interact(ActorSubjectType actor, ActorSubjectType subject)
         {
-            return new Event(DateTime.Now, EvenTipe.Init, actor, subject, "");
+            return new Event(DateTime.Now, EvenType.Interact, actor, subject, "");
         }
-        static Event Final(string actor, string subject)
+        static Event Interact(ActorSubjectType actor, ActorSubjectType subject, string extra)
         {
-            return new Event(DateTime.Now, EvenTipe.Final, actor, subject, "");
+            return new Event(DateTime.Now, EvenType.Interact, actor, subject, extra);
         }
-        static Event UserDefinedEvent(string actor, string subject, string extra)
+        /// <summary>
+        /// Posición actor/sujeto
+        /// </summary>
+        /// <param name="actor"></param>
+        /// <param name="scene"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
+        static Event Position(ActorSubjectType actor, string scene, int x, int y, int z)
         {
-            return new Event(DateTime.Now, EvenTipe.UserDefinedEvent, actor, subject, extra);
+            string xtra = scene + ": " + x.ToString() + " " + y.ToString() + " " + z.ToString();
+            return new Event(DateTime.Now, EvenType.Position, actor, ActorSubjectType.None, xtra);
+        }
+        /// <summary>
+        /// Inicio
+        /// </summary>
+        /// <param name="actor"></param>
+        /// <param name="subject"></param>
+        /// <returns></returns>
+        static Event Init(ActorSubjectType actor, ActorSubjectType subject)
+        {
+            return new Event(DateTime.Now, EvenType.Init, actor, subject, "");
+        }
+        static Event Init(ActorSubjectType actor, ActorSubjectType subject, string extra)
+        {
+            return new Event(DateTime.Now, EvenType.Init, actor, subject, extra);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="actor"></param>
+        /// <param name="subject"></param>
+        /// <returns></returns>
+        static Event Final(ActorSubjectType actor, ActorSubjectType subject)
+        {
+            return new Event(DateTime.Now, EvenType.Final, actor, subject, "");
+        }
+        static Event Final(ActorSubjectType actor, ActorSubjectType subject, string extra)
+        {
+            return new Event(DateTime.Now, EvenType.Final, actor, subject, extra);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="actor"></param>
+        /// <param name="subject"></param>
+        /// <param name="extra"></param>
+        /// <returns></returns>
+        static Event UserDefinedEvent(ActorSubjectType actor, ActorSubjectType subject, string extra)
+        {
+            return new Event(DateTime.Now, EvenType.UserDefinedEvent, actor, subject, extra);
         }
     }
 
-    enum EvenTipe { Dead, Damage, Interact, Position, Init, Final, UserDefinedEvent }
+    enum EvenType { Dead, Damage, Interact, Position, Init, Final, UserDefinedEvent, None }
+    enum ActorSubjectType {Player, NPC, Enemy, Boss, Item, PowerUp, DeathZone, Trigger, Scene, Other, None}
     class Event
     {
         DateTime _timeStamp;
-        EvenTipe _verb;
-        string _actor;
-        string _subject;
+        EvenType _verb;
+        ActorSubjectType _actor;
+        ActorSubjectType _subject;
         string _extra;
 
 
-        public Event(DateTime timeStamp, EvenTipe verb, string actor, string subject, string extra)
+        public Event(DateTime timeStamp, EvenType verb, ActorSubjectType actor, ActorSubjectType subject, string extra)
         {
             _timeStamp = timeStamp;
             _verb = verb;
@@ -69,15 +137,15 @@ namespace Tracker
         {
             get { return _timeStamp; }
         }
-        public EvenTipe Verb
+        public EvenType Verb
         {
             get { return _verb; }
         }
-        public string Actor
+        public ActorSubjectType Actor
         {
             get { return _actor; }
         }
-        public string Subject
+        public ActorSubjectType Subject
         {
             get { return _subject; }
         }

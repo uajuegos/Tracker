@@ -15,7 +15,6 @@ namespace Tracker
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
 
             tr.Start();
             //Inicmaos los Thread para la prueba
