@@ -15,8 +15,8 @@ namespace Tracker
         static Queue<string> pendientes;
         static bool flushing;
         static bool exit;
-        //static serializer
-        //static persitance
+        static ISerializer serializer;
+        static IPersistence persistance;
         private static Tracker instance = null;
 
         //Metodos------------------------------------------------------------------------------------------------------------------------------------------------
@@ -26,6 +26,9 @@ namespace Tracker
             pendientes = new Queue<string>();
             flushing = false;
             exit = false;
+
+            serializer = new CSVSerializer();
+            persistance = new FilePersistence(SerializerType.CSV);
         }
 
         public static Tracker Instance
@@ -81,13 +84,21 @@ namespace Tracker
         }
         static void ProcessQueue()
         {
-            while (cola.Count > 0)
+            string total = "";
+            //TODO: ESTO TIENE QUE SER DE TRACKER EVENT
+            Queue<string> copyQueue = new Queue<string>(cola);
+            cola.Clear();
+
+            while (copyQueue.Count > 0)
             {
                 string e = cola.Dequeue();
                 Console.WriteLine(e);
-                //Serializer.Serialize(e);
+                total += serializer.Serialize(e);
             }
-            //Persistance.Write();
+
+            persistance.Send(total);
+
+            //Persistance.Write("a,a,a,a");
             //Serializer.Clear();           Suponego qeu el serializer mantiene la información dentro de si hasta que se escribe, parece mas eficiente, el Serialize() suma informacion que le mandes
 
         }

@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 
 namespace Tracker
 {
-    //CONVERSION DE TIPO DE DATO (NO TENEMOS TRACKEVENT AUN)
-    //int = TrackerEvent
+    /// <summary>
+    /// Enumerado con los tipos de formato para serializar
+    /// </summary>
+    public enum SerializerType { CSV }
 
     /// <summary>
     /// Interfaz de la clase Serializer
     /// </summary>
     interface ISerializer
     {
-        string Serialize(int trackerEvent);
+        string Serialize(Event trackerEvent);
     }
 }

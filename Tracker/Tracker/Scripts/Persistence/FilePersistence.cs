@@ -13,7 +13,18 @@ namespace Tracker
     class FilePersistence : IPersistence
     {
         //Ruta
-        private static string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Beerkings" + System.DateTime.Now.Ticks.ToString() + ".csv");
+        private string path;
+
+        public FilePersistence(SerializerType serializerType)
+        {
+            switch (serializerType)
+            {
+                case SerializerType.CSV:
+                    path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Beerkings" + System.DateTime.Now.Ticks.ToString() + ".csv");
+                    break;
+            }
+
+        }
 
         public void Send(string eventString)
         {

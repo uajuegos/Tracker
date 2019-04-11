@@ -60,6 +60,11 @@ namespace Tracker
             _extra = extra;
         }
 
+        public string ToCSV()
+        {
+
+        }
+
         public DateTime TimeStamp
         {
             get { return _timeStamp; }

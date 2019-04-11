@@ -11,10 +11,10 @@ namespace Tracker
     /// </summary>
     class CSVSerializer : ISerializer
     {
-        string ISerializer.Serialize(int trackerEvent)
+        string ISerializer.Serialize(Event trackerEvent)
         {
             return " ";
-            // return trackerEvent.ToCSV();
+            // return trackerEvent.ToCSV(); TODO:
         }
     }
 }
