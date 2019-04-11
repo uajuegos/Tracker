@@ -11,24 +11,31 @@ namespace Tracker
     class Tracker
     {
         //Atributos----------------------------------------------------------------------------------------------------------------------------------------------
-        static Queue<string> cola;
-        static Queue<string> pendientes;
-        static bool flushing;
-        static bool exit;
+        private static Tracker instance = null;
+        static Queue<Event> cola;
+        static Queue<Event> pendientes;
         static ISerializer serializer;
         static IPersistence persistance;
-        private static Tracker instance = null;
+
+        static bool flushing;
+        private float FlushRate; //Tiempo entre cada flush TODO: AL EDITOR
+
+        static bool exit;
+
 
         //Metodos------------------------------------------------------------------------------------------------------------------------------------------------
         private Tracker()
         {
-            cola = new Queue<string>();
-            pendientes = new Queue<string>();
+            cola = new Queue<Event>();
+            pendientes = new Queue<Event>();
             flushing = false;
             exit = false;
 
             serializer = new CSVSerializer();
             persistance = new FilePersistence(SerializerType.CSV);
+            FlushRate = 5.0f;
+
+            Start();//Comienzo
         }
 
         public static Tracker Instance
@@ -42,7 +49,7 @@ namespace Tracker
                 return instance;
             }
         }
-        public void AddEvent(string e)
+        public void AddEvent(Event e)
         {
             if (!flushing)
             {
@@ -52,7 +59,7 @@ namespace Tracker
                     {
                         lock (pendientes)
                         {
-                            cola = new Queue<string>(pendientes);
+                            cola = new Queue<Event>(pendientes);
                             pendientes.Clear();
                         }
                     }
@@ -68,40 +75,43 @@ namespace Tracker
             }
         }
 
-        static void Flush()
+        void Flush()
         {
-            Console.WriteLine("Starting Thread");
-            while (!exit)
+            Thread.Sleep((int)(FlushRate * 1000));
+            Console.WriteLine("Starting Flush Thread");
+            int i = 0;
+            while (true)
             {
                 lock (cola)
                 {
                     flushing = true;
                     ProcessQueue();
                     flushing = false;
+                    //No se hace flush hasta pasados 5 segundos
                 }
 
+                Thread.Sleep((int)(FlushRate * 1000));
             }
         }
-        static void ProcessQueue()
+        void ProcessQueue()
         {
-            string total = "";
-            //TODO: ESTO TIENE QUE SER DE TRACKER EVENT
-            Queue<string> copyQueue = new Queue<string>(cola);
-            cola.Clear();
-
-            while (copyQueue.Count > 0)
+            if (cola.Count > 0)
             {
-                string e = cola.Dequeue();
-                Console.WriteLine(e);
-                total += serializer.Serialize(e);
+                string flushString = "";
+
+                Queue<Event> copyQueue = new Queue<Event>(cola);
+                cola.Clear();
+
+                while (copyQueue.Count > 0)
+                {
+                    Event e = copyQueue.Dequeue();
+                    Console.WriteLine(e);
+                    flushString += serializer.Serialize(e);
+                }
+                persistance.Send(flushString);
             }
-
-            persistance.Send(total);
-
-            //Persistance.Write("a,a,a,a");
-            //Serializer.Clear();           Suponego qeu el serializer mantiene la información dentro de si hasta que se escribe, parece mas eficiente, el Serialize() suma informacion que le mandes
-
         }
+
         public void Start()
         {
             Thread t = new Thread(Flush);

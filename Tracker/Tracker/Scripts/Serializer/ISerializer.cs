@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Tracker
 {
-    /// <summary>
-    /// Enumerado con los tipos de formato para serializar
-    /// </summary>
+
+    // Enumerado con los tipos de formato para serializar
     public enum SerializerType { CSV }
 
     /// <summary>

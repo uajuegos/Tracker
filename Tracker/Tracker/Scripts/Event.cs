@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tracker
 {
-    static class EventCreator
+    public static class EventCreator
     {
 
         //Podría ser interesante comprobar la conexion a internet y proporcionar la hora del equipo solo si no hay acceso a la red
@@ -17,11 +17,11 @@ namespace Tracker
         /// <param name="actor"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        static Event Dead(ActorSubjectType actor, ActorSubjectType subject)
+        public static Event Dead(ActorSubjectType actor, ActorSubjectType subject)
         {
             return new Event(DateTime.Now, EvenType.Dead, actor, subject, "");
         }
-        static Event Dead(ActorSubjectType actor, ActorSubjectType subject, string extra)
+        public static Event Dead(ActorSubjectType actor, ActorSubjectType subject, string extra)
         {
             return new Event(DateTime.Now, EvenType.Dead, actor, subject, extra);
         }
@@ -108,9 +108,9 @@ namespace Tracker
         }
     }
 
-    enum EvenType { Dead, Damage, Interact, Position, Init, Final, UserDefinedEvent, None }
-    enum ActorSubjectType {Player, NPC, Enemy, Boss, Item, PowerUp, DeathZone, Trigger, Scene, Other, None}
-    class Event
+    public enum EvenType { Dead, Damage, Interact, Position, Init, Final, UserDefinedEvent, None }
+    public enum ActorSubjectType {Player, NPC, Enemy, Boss, Item, PowerUp, DeathZone, Trigger, Scene, Other, None}
+    public class Event
     {
         DateTime _timeStamp;
         EvenType _verb;
@@ -128,9 +128,15 @@ namespace Tracker
             _extra = extra;
         }
 
+        /// <summary>
+        /// Método encargado de serializar los parámetros del evento a CSV
+        /// </summary>
+        /// <returns></returns>
         public string ToCSV()
         {
-
+            string CSVString;
+            CSVString = _timeStamp.ToString() + "," + _verb.ToString() + "," + _actor.ToString() + "," + _subject.ToString() + "," + _subject.ToString() + "," + _extra + "\n";
+            return CSVString;
         }
 
         public DateTime TimeStamp

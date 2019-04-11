@@ -23,7 +23,6 @@ namespace Tracker
                     path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Beerkings" + System.DateTime.Now.Ticks.ToString() + ".csv");
                     break;
             }
-
         }
 
         public void Send(string eventString)
@@ -36,6 +35,7 @@ namespace Tracker
 
             stream.Write(info, 0, info.Length);
 
+            //Se cierra el fichero
             stream.Close();
         }
     }

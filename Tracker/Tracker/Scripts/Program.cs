@@ -11,49 +11,41 @@ namespace Tracker
     {
         static Tracker tr = Tracker.Instance;
         static Random r = new Random();
-        private static string path = "";
 
         static void Main(string[] args)
         {
 
-            tr.Start();
-            //Inicmaos los Thread para la prueba
-
-            Thread t0 = new Thread(AddEvent);
-            t0.Start();
-            Thread.Sleep(10);
-            Thread t1 = new Thread(AddEvent);
-            t1.Start();
-            Thread.Sleep(10);
-            Thread t2 = new Thread(AddEvent);
-            t2.Start();
-            Thread.Sleep(10);
+            //Iniciamos los Thread para la prueba
+            //Thread t0 = new Thread(AddEvent);
+            //t0.Start();
+            //Thread.Sleep(10);
+            //Thread t1 = new Thread(AddEvent);
+            //t1.Start();
+            //Thread.Sleep(10);
+            //Thread t2 = new Thread(AddEvent);
+            //t2.Start();
+            //Thread.Sleep(10);
             AddEvent();
 
-            //No se que hace esto lo dejo copiado
-
-            // The code provided will print ‘Hello World’ to the console.
-            // Press Ctrl+F5 (or go to Debug > Start Without Debugging) to run your app.
-            /*
-            FilePersistence filePersistence = new FilePersistence();
-            filePersistence.Send("holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-            // Console.WriteLine(path);
-            //  Console.WriteLine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Beerkings.csv"));
-
-            Console.ReadKey();*/
-
-            // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
-
+            while (true) ;
         }
+
+        /// <summary>
+        /// Método
+        /// </summary>
         static void AddEvent()
         {
+            Event e = EventCreator.Dead(ActorSubjectType.Player, ActorSubjectType.Enemy, "HP: 30");
             int i = 0;
-            while (true)
+            while (i < 2)
             {
-                tr.AddEvent(i.ToString());
+                tr.AddEvent(e);
+               // Thread.Sleep(r.Next(10));
+                Console.Write("Añadidos evento número " + i + "\n");
                 i++;
-                Thread.Sleep(r.Next(10));
             }
+            Console.Write("Fin de añadir eventos\n");
+
         }
     }
 }
