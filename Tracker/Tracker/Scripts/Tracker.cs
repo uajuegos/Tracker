@@ -12,15 +12,15 @@ namespace Tracker
     {
         //Atributos----------------------------------------------------------------------------------------------------------------------------------------------
         private static Tracker instance = null;
+        static Object dummyCola, dummyPend;
         static Queue<Event> cola;
         static Queue<Event> pendientes;
         static ISerializer serializer;
         static IPersistence persistance;
 
+        static bool exit;
         static bool flushing;
         private float FlushRate; //Tiempo entre cada flush TODO: AL EDITOR
-
-        static bool exit;
 
 
         //Metodos------------------------------------------------------------------------------------------------------------------------------------------------
@@ -30,9 +30,12 @@ namespace Tracker
             pendientes = new Queue<Event>();
             flushing = false;
             exit = false;
+            dummyCola = new object();
+            dummyPend = new object();
+
 
             serializer = new CSVSerializer();
-            persistance = new FilePersistence(SerializerType.CSV);
+            persistance = new FilePersistence(SerializerType.CSV, "Beerkings");
             FlushRate = 5.0f;
 
             Start();//Comienzo
@@ -53,11 +56,11 @@ namespace Tracker
         {
             if (!flushing)
             {
-                lock (cola)
+                lock (dummyCola)
                 {
                     if (pendientes.Count > 0)
                     {
-                        lock (pendientes)
+                        lock (dummyPend)
                         {
                             cola = new Queue<Event>(pendientes);
                             pendientes.Clear();
@@ -68,7 +71,7 @@ namespace Tracker
             }
             else
             {
-                lock (pendientes)
+                lock (dummyPend)
                 {
                     pendientes.Enqueue(e);
                 }
@@ -80,9 +83,9 @@ namespace Tracker
             Thread.Sleep((int)(FlushRate * 1000));
             Console.WriteLine("Starting Flush Thread");
             int i = 0;
-            while (true)
+            while (!exit)
             {
-                lock (cola)
+                lock (dummyCola)
                 {
                     flushing = true;
                     ProcessQueue();
@@ -90,7 +93,7 @@ namespace Tracker
                     //No se hace flush hasta pasados 5 segundos
                 }
 
-                Thread.Sleep((int)(FlushRate * 1000));
+                Thread.Sleep((int)(FlushRate * 100));
             }
         }
         void ProcessQueue()

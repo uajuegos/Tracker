@@ -16,15 +16,15 @@ namespace Tracker
         {
 
             //Iniciamos los Thread para la prueba
-            //Thread t0 = new Thread(AddEvent);
-            //t0.Start();
-            //Thread.Sleep(10);
-            //Thread t1 = new Thread(AddEvent);
-            //t1.Start();
-            //Thread.Sleep(10);
-            //Thread t2 = new Thread(AddEvent);
-            //t2.Start();
-            //Thread.Sleep(10);
+            Thread t0 = new Thread(AddEvent);
+            t0.Start();
+            Thread.Sleep(10);
+            Thread t1 = new Thread(AddEvent);
+            t1.Start();
+            Thread.Sleep(10);
+            Thread t2 = new Thread(AddEvent);
+            t2.Start();
+            Thread.Sleep(10);
             AddEvent();
 
             while (true) ;
@@ -37,12 +37,13 @@ namespace Tracker
         {
             Event e = EventCreator.Dead(ActorSubjectType.Player, ActorSubjectType.Enemy, "HP: 30");
             int i = 0;
-            while (i < 2)
+            while (i < 4)
             {
                 tr.AddEvent(e);
                // Thread.Sleep(r.Next(10));
                 Console.Write("Añadidos evento número " + i + "\n");
                 i++;
+                Thread.Sleep(10);
             }
             Console.Write("Fin de añadir eventos\n");
 

@@ -14,13 +14,29 @@ namespace Tracker
     {
         //Ruta
         private string path;
-
+        
         public FilePersistence(SerializerType serializerType)
         {
             switch (serializerType)
             {
                 case SerializerType.CSV:
                     path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Beerkings" + System.DateTime.Now.Ticks.ToString() + ".csv");
+                    Console.WriteLine(path);
+                    break;
+            }
+        }
+
+        public FilePersistence(SerializerType serializerType, string gameName)
+        {
+            switch (serializerType)
+            {
+                case SerializerType.CSV:
+                    string partialPath = path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), gameName);
+                    path = partialPath + Path.DirectorySeparatorChar + System.DateTime.Now.Ticks.ToString() + ".csv";
+                    if (!Directory.Exists(partialPath))
+                        Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), gameName));
+
+                    Console.WriteLine(path);
                     break;
             }
         }
