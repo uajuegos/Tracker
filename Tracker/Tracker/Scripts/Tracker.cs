@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Tracker
 {
-    class Tracker
+    public class Tracker
     {
         //Atributos----------------------------------------------------------------------------------------------------------------------------------------------
         private static Tracker instance = null;

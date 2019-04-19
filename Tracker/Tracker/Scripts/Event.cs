@@ -31,11 +31,11 @@ namespace Tracker
         /// <param name="actor"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        static Event Damage(ActorSubjectType actor, ActorSubjectType subject)
+        public static Event Damage(ActorSubjectType actor, ActorSubjectType subject)
         {
             return new Event(DateTime.Now, EvenType.Damage, actor, subject, "");
         }
-        static Event Damage(ActorSubjectType actor, ActorSubjectType subject, string extra)
+        public static Event Damage(ActorSubjectType actor, ActorSubjectType subject, string extra)
         {
             return new Event(DateTime.Now, EvenType.Damage, actor, subject, extra);
         }
@@ -45,11 +45,11 @@ namespace Tracker
         /// <param name="actor"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        static Event Interact(ActorSubjectType actor, ActorSubjectType subject)
+        public static Event Interact(ActorSubjectType actor, ActorSubjectType subject)
         {
             return new Event(DateTime.Now, EvenType.Interact, actor, subject, "");
         }
-        static Event Interact(ActorSubjectType actor, ActorSubjectType subject, string extra)
+        public static Event Interact(ActorSubjectType actor, ActorSubjectType subject, string extra)
         {
             return new Event(DateTime.Now, EvenType.Interact, actor, subject, extra);
         }
@@ -62,7 +62,7 @@ namespace Tracker
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <returns></returns>
-        static Event Position(ActorSubjectType actor, string scene, int x, int y, int z)
+        public static Event Position(ActorSubjectType actor, string scene, int x, int y, int z)
         {
             string xtra = scene + ": " + x.ToString() + " " + y.ToString() + " " + z.ToString();
             return new Event(DateTime.Now, EvenType.Position, actor, ActorSubjectType.None, xtra);
@@ -73,11 +73,11 @@ namespace Tracker
         /// <param name="actor"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        static Event Init(ActorSubjectType actor, ActorSubjectType subject)
+        public static Event Init(ActorSubjectType actor, ActorSubjectType subject)
         {
             return new Event(DateTime.Now, EvenType.Init, actor, subject, "");
         }
-        static Event Init(ActorSubjectType actor, ActorSubjectType subject, string extra)
+        public static Event Init(ActorSubjectType actor, ActorSubjectType subject, string extra)
         {
             return new Event(DateTime.Now, EvenType.Init, actor, subject, extra);
         }
@@ -87,11 +87,11 @@ namespace Tracker
         /// <param name="actor"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        static Event Final(ActorSubjectType actor, ActorSubjectType subject)
+        public static Event Final(ActorSubjectType actor, ActorSubjectType subject)
         {
             return new Event(DateTime.Now, EvenType.Final, actor, subject, "");
         }
-        static Event Final(ActorSubjectType actor, ActorSubjectType subject, string extra)
+        public static Event Final(ActorSubjectType actor, ActorSubjectType subject, string extra)
         {
             return new Event(DateTime.Now, EvenType.Final, actor, subject, extra);
         }
@@ -102,7 +102,7 @@ namespace Tracker
         /// <param name="subject"></param>
         /// <param name="extra"></param>
         /// <returns></returns>
-        static Event UserDefinedEvent(ActorSubjectType actor, ActorSubjectType subject, string extra)
+        public static Event UserDefinedEvent(ActorSubjectType actor, ActorSubjectType subject, string extra)
         {
             return new Event(DateTime.Now, EvenType.UserDefinedEvent, actor, subject, extra);
         }
