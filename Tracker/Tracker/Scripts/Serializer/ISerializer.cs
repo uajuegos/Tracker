@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tracker
+﻿
+namespace TrackerP3
 {
-
-    // Enumerado con los tipos de formato para serializar
+    // Enumerado con los tipos de formatos disponibles para serializar
     public enum SerializerType { CSV }
 
     /// <summary>
     /// Interfaz de la clase Serializer
     /// </summary>
-    interface ISerializer
+    public interface ISerializer
     {
+        /// <summary>
+        /// Serializa un evento en el formato correspondiente
+        /// </summary>
+        /// <param name="trackerEvent"></param>
+        /// <returns></returns>
         string Serialize(Event trackerEvent);
     }
 }

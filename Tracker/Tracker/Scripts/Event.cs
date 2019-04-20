@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace Tracker
+namespace TrackerP3
 {
     public static class EventCreator
     {
@@ -110,6 +110,7 @@ namespace Tracker
 
     public enum EvenType { Dead, Damage, Interact, Position, Init, Final, UserDefinedEvent, None }
     public enum ActorSubjectType {Player, NPC, Enemy, Boss, Item, PowerUp, DeathZone, Trigger, Scene, Other, None}
+
     public class Event
     {
         DateTime _timeStamp;

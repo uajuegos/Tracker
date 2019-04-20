@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
-namespace Tracker
+namespace TrackerP3
 {
     /// <summary>
     /// Clase encargada de escribir en un fichero local los datos de los eventos
@@ -13,43 +10,48 @@ namespace Tracker
     class FilePersistence : IPersistence
     {
         //Ruta
-        private string path;
+        private string filePath;
         
-        public FilePersistence(SerializerType serializerType)
-        {
-            switch (serializerType)
-            {
-                case SerializerType.CSV:
-                    path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Beerkings" + System.DateTime.Now.Ticks.ToString() + ".csv");
-                    Console.WriteLine(path);
-                    break;
-            }
-        }
-
+        /// <summary>
+        /// Según el tipo de formato, crea el directorio y obtiene la ruta del fichero en el que guardará los eventos de la ejecución
+        /// </summary>
+        /// <param name="serializerType"></param>
+        /// <param name="gameName"></param>
         public FilePersistence(SerializerType serializerType, string gameName)
         {
             switch (serializerType)
             {
                 case SerializerType.CSV:
-                    string partialPath = path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), gameName);
-                    path = partialPath + Path.DirectorySeparatorChar + System.DateTime.Now.Ticks.ToString() + ".csv";
-                    if (!Directory.Exists(partialPath))
+                    //Obtenemos la ruta del directorio en función del nombre de juego
+                    string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), gameName);
+
+                    //Comprobamos si existe y lo creamos
+                    if (!Directory.Exists(directoryPath))
                         Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), gameName));
 
-                    Console.WriteLine(path);
+                    //Obtenemos la ruta del fichero
+                    filePath = directoryPath + Path.DirectorySeparatorChar + System.DateTime.Now.Ticks.ToString() + ".csv";
+
+                    //Console.WriteLine(path);
+
                     break;
             }
         }
 
+        /// <summary>
+        /// Guarda las trazas en disco
+        /// </summary>
+        /// <param name="eventString"></param>
         public void Send(string eventString)
         {
-            //Creación del fichero
-            FileStream stream = new FileStream(path, FileMode.OpenOrCreate);
+            //Apertura/creación del fichero
+            FileStream stream = new FileStream(filePath, FileMode.OpenOrCreate);
 
             //Buffer que guarda el string convertido en bytes
-            byte[] info = new UTF8Encoding(true).GetBytes(eventString);
+            byte[] streamInfo = new UTF8Encoding(true).GetBytes(eventString);
 
-            stream.Write(info, 0, info.Length);
+            //Escribe en fichero
+            stream.Write(streamInfo, 0, streamInfo.Length);
 
             //Se cierra el fichero
             stream.Close();

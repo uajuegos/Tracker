@@ -1,51 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
+﻿using System.Threading;
+using TrackerP3;
 
-namespace Tracker
+class Program
 {
-    class Program
+    //static Random r = new Random();
+
+    static void Main(string[] args)
     {
-        static Tracker tr = Tracker.Instance;
-        static Random r = new Random();
+        Tracker.Instance.Init("Beerkings", SerializerType.CSV, PersistenceType.FILE);
 
-        static void Main(string[] args)
-        {
+        //Bucle de juego
 
-            //Iniciamos los Thread para la prueba
-            Thread t0 = new Thread(AddEvent);
-            t0.Start();
-            Thread.Sleep(10);
-            Thread t1 = new Thread(AddEvent);
-            t1.Start();
-            Thread.Sleep(10);
-            Thread t2 = new Thread(AddEvent);
-            t2.Start();
-            Thread.Sleep(10);
-            AddEvent();
+        //Prueba evento en otra hebra
+        Thread t0 = new Thread(AddEvents);
+        t0.Start();
 
-            while (true) ;
-        }
+        //Prueba de evento en hebra principal
+        AddEvents();
 
-        /// <summary>
-        /// Método
-        /// </summary>
-        static void AddEvent()
+        //Paramos la ejecución 1 segundo
+        Thread.Sleep(5000);
+
+        Tracker.Instance.End();
+    }
+
+    /// <summary>
+    /// Método test
+    /// </summary>
+    static void AddEvents()
+    {
+        for (int i = 0; i < 4; i++)
         {
             Event e = EventCreator.Dead(ActorSubjectType.Player, ActorSubjectType.Enemy, "HP: 30");
-            int i = 0;
-            while (i < 4)
-            {
-                tr.AddEvent(e);
-               // Thread.Sleep(r.Next(10));
-                Console.Write("Añadidos evento número " + i + "\n");
-                i++;
-                Thread.Sleep(10);
-            }
-            Console.Write("Fin de añadir eventos\n");
+            Tracker.Instance.AddEvent(e);
+
+            //Esperamos un poco
+            Thread.Sleep(100);
 
         }
     }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tracker
+﻿
+namespace TrackerP3
 {
     /// <summary>
     /// Clase encargada de serializar una cadena al formato CSV
@@ -16,7 +11,7 @@ namespace Tracker
         /// </summary>
         /// <param name="trackerEvent"></param>
         /// <returns></returns>
-        string ISerializer.Serialize(Event trackerEvent)
+        public string Serialize(Event trackerEvent)
         {         
             return trackerEvent.ToCSV(); 
         }

@@ -6,40 +6,15 @@ using System.Threading.Tasks;
 using System.Threading;
 
 
-namespace Tracker
+namespace TrackerP3
 {
+    /// <summary>
+    /// Singleton class. Accesible desde cualquier punto del juego
+    /// Requiere inicialización y finalización explícita
+    /// </summary>
     public class Tracker
     {
-        //Atributos----------------------------------------------------------------------------------------------------------------------------------------------
-        private static Tracker instance = null;
-        static Object dummyCola, dummyPend;
-        static Queue<Event> cola;
-        static Queue<Event> pendientes;
-        static ISerializer serializer;
-        static IPersistence persistance;
-
-        static bool exit;
-        static bool flushing;
-        private float FlushRate; //Tiempo entre cada flush TODO: AL EDITOR
-
-
-        //Metodos------------------------------------------------------------------------------------------------------------------------------------------------
-        private Tracker()
-        {
-            cola = new Queue<Event>();
-            pendientes = new Queue<Event>();
-            flushing = false;
-            exit = false;
-            dummyCola = new object();
-            dummyPend = new object();
-
-
-            serializer = new CSVSerializer();
-            persistance = new FilePersistence(SerializerType.CSV, "Beerkings");
-            FlushRate = 5.0f;
-
-            Start();//Comienzo
-        }
+        #region Singleton
 
         public static Tracker Instance
         {
@@ -52,6 +27,72 @@ namespace Tracker
                 return instance;
             }
         }
+        private static Tracker instance = null;
+
+        private Tracker()
+        {
+        }
+        #endregion Singleton
+
+        //Atributos----------------------------------------------------------------------------------------------------------------------------------------------
+        private ISerializer serializer;
+        private IPersistence persistance;
+
+        static Object dummyCola, dummyPend;
+        static Queue<Event> cola;
+        static Queue<Event> pendientes;
+
+        static bool exit;
+        static bool flushing;
+        private float flushRate; //Tiempo entre cada flush TODO: AL EDITOR
+
+        //Metodos------------------------------------------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Inicialización del tracker. Es necesario una inicialización explicita
+        /// Genera evento de inicio de juego
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <param name="serializerType"></param>
+        /// <param name="persistenceType"></param>
+        public void Init(string gameName, SerializerType serializerType, PersistenceType persistenceType)
+        {
+            switch (serializerType)
+            {
+                case SerializerType.CSV:
+                    serializer = new CSVSerializer();
+                    break;
+            }
+
+            switch (persistenceType)
+            {
+                case PersistenceType.FILE:
+                    persistance = new FilePersistence(serializerType, gameName);
+                    break;
+            }
+
+            cola = new Queue<Event>();
+            pendientes = new Queue<Event>();
+            flushing = false;
+            exit = false;
+            dummyCola = new object();
+            dummyPend = new object();
+
+            flushRate = 5.0f;
+
+            Thread t = new Thread(Flush);
+            t.Start();
+        }
+
+        /// <summary>
+        /// Desconecta el tracker
+        /// Genera evento de fin de juego
+        /// </summary>
+        public void End()
+        {
+            exit = true;
+        }
+
         public void AddEvent(Event e)
         {
             if (!flushing)
@@ -80,7 +121,7 @@ namespace Tracker
 
         void Flush()
         {
-            Thread.Sleep((int)(FlushRate * 1000));
+            Thread.Sleep((int)(flushRate * 1000));
             Console.WriteLine("Starting Flush Thread");
             int i = 0;
             while (!exit)
@@ -93,7 +134,7 @@ namespace Tracker
                     //No se hace flush hasta pasados 5 segundos
                 }
 
-                Thread.Sleep((int)(FlushRate * 100));
+                Thread.Sleep((int)(flushRate * 100));
             }
         }
         void ProcessQueue()
@@ -114,12 +155,5 @@ namespace Tracker
                 persistance.Send(flushString);
             }
         }
-
-        public void Start()
-        {
-            Thread t = new Thread(Flush);
-            t.Start();
-        }
-        void Exit() { exit = true; }
     }
 }
