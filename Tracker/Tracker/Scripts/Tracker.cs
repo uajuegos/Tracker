@@ -32,11 +32,19 @@ namespace TrackerP3
         private Tracker()
         {
         }
+
         #endregion Singleton
 
         //Atributos----------------------------------------------------------------------------------------------------------------------------------------------
+        /// <summary>
+        /// ID único de sesion
+        /// </summary>
+        public static string ID = System.DateTime.Now.Ticks.ToString();
+
         private ISerializer serializer;
         private IPersistence persistance;
+
+        private Thread flushThread;
 
         static Object dummyCola, dummyPend;
         static Queue<Event> cola;
@@ -44,7 +52,7 @@ namespace TrackerP3
 
         static bool exit;
         static bool flushing;
-        private float flushRate; //Tiempo entre cada flush TODO: AL EDITOR
+        private float _flushRate; //Tiempo entre cada flush TODO: AL EDITOR
 
         //Metodos------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -55,7 +63,7 @@ namespace TrackerP3
         /// <param name="gameName"></param>
         /// <param name="serializerType"></param>
         /// <param name="persistenceType"></param>
-        public void Init(string gameName, SerializerType serializerType, PersistenceType persistenceType)
+        public void Init(string gameName, SerializerType serializerType, PersistenceType persistenceType, float flushRate)
         {
             switch (serializerType)
             {
@@ -71,6 +79,8 @@ namespace TrackerP3
                     break;
             }
 
+            _flushRate = flushRate;
+
             cola = new Queue<Event>();
             pendientes = new Queue<Event>();
             flushing = false;
@@ -78,10 +88,10 @@ namespace TrackerP3
             dummyCola = new object();
             dummyPend = new object();
 
-            flushRate = 5.0f;
+            flushThread = new Thread(FlushRoutine);
+            flushThread.Start();
 
-            Thread t = new Thread(Flush);
-            t.Start();
+            AddEvent(EventCreator.Init(ActorSubjectType.None, ActorSubjectType.None, ID));
         }
 
         /// <summary>
@@ -91,6 +101,11 @@ namespace TrackerP3
         public void End()
         {
             exit = true;
+            flushThread.Abort();
+
+            AddEvent(EventCreator.Final(ActorSubjectType.None, ActorSubjectType.None,ID));
+
+            Flush();
         }
 
         public void AddEvent(Event e)
@@ -119,40 +134,41 @@ namespace TrackerP3
             }
         }
 
-        void Flush()
+        private void FlushRoutine()
         {
-            Thread.Sleep((int)(flushRate * 1000));
+            Thread.Sleep((int)(_flushRate * 1000));
             Console.WriteLine("Starting Flush Thread");
-            int i = 0;
+
             while (!exit)
             {
-                lock (dummyCola)
-                {
-                    flushing = true;
-                    ProcessQueue();
-                    flushing = false;
-                    //No se hace flush hasta pasados 5 segundos
-                }
+                Flush();
 
-                Thread.Sleep((int)(flushRate * 100));
+                //No se hace flush hasta pasados 5 segundos
+                Thread.Sleep((int)(_flushRate * 1000));
             }
         }
-        void ProcessQueue()
+
+        public void Flush()
         {
-            if (cola.Count > 0)
+            lock (dummyCola)
             {
-                string flushString = "";
-
-                Queue<Event> copyQueue = new Queue<Event>(cola);
-                cola.Clear();
-
-                while (copyQueue.Count > 0)
+                flushing = true;
+                if (cola.Count > 0)
                 {
-                    Event e = copyQueue.Dequeue();
-                    Console.WriteLine(e);
-                    flushString += serializer.Serialize(e);
+                    string flushString = "";
+
+                    Queue<Event> copyQueue = new Queue<Event>(cola);
+                    cola.Clear();
+
+                    while (copyQueue.Count > 0)
+                    {
+                        Event e = copyQueue.Dequeue();
+                        Console.WriteLine(e);
+                        flushString += serializer.Serialize(e);
+                    }
+                    persistance.Send(flushString);
                 }
-                persistance.Send(flushString);
+                flushing = false;
             }
         }
     }

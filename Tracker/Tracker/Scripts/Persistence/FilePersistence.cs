@@ -19,21 +19,18 @@ namespace TrackerP3
         /// <param name="gameName"></param>
         public FilePersistence(SerializerType serializerType, string gameName)
         {
+            //Obtenemos la ruta del directorio en función del nombre de juego
+            string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), gameName);
+
+            //Comprobamos si existe y lo creamos
+            if (!Directory.Exists(directoryPath))
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), gameName));
+
+            //Obtenemos la ruta del fichero
             switch (serializerType)
             {
                 case SerializerType.CSV:
-                    //Obtenemos la ruta del directorio en función del nombre de juego
-                    string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), gameName);
-
-                    //Comprobamos si existe y lo creamos
-                    if (!Directory.Exists(directoryPath))
-                        Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), gameName));
-
-                    //Obtenemos la ruta del fichero
-                    filePath = directoryPath + Path.DirectorySeparatorChar + System.DateTime.Now.Ticks.ToString() + ".csv";
-
-                    //Console.WriteLine(path);
-
+                    filePath = directoryPath + Path.DirectorySeparatorChar + Tracker.ID + ".csv";
                     break;
             }
         }
@@ -49,6 +46,9 @@ namespace TrackerP3
 
             //Buffer que guarda el string convertido en bytes
             byte[] streamInfo = new UTF8Encoding(true).GetBytes(eventString);
+
+            //Mueve el puntero
+            stream.Position = stream.Length;
 
             //Escribe en fichero
             stream.Write(streamInfo, 0, streamInfo.Length);
